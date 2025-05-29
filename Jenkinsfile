@@ -9,7 +9,7 @@ pipeline {
 
         stage('GetFromGithub') {
             steps {
-                git branch: 'main', credentialsId: 'github', url: GIT_URL
+                git branch: 'master', url: GIT_URL
             }
         }
        
