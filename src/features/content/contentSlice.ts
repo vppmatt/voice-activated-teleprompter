@@ -2,6 +2,7 @@ import type { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "../../app/createAppSlice"
 import { type TextElement, tokenize } from "../../lib/word-tokenizer"
 import { toggleEdit } from "../navbar/navbarSlice"
+import { createAsyncThunk } from "@reduxjs/toolkit"
 
 export interface ContentSliceState {
   rawText: string
@@ -19,6 +20,24 @@ const initialState: ContentSliceState = {
   interimTranscriptIndex: -1,
 }
 
+// Add async thunk for loading content
+export const loadContent = createAsyncThunk(
+  "content/loadContent",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://svr01:3334/store")
+      const data = await response.json()
+      if (typeof data?.data === "string") {
+        return data.data
+      } else {
+        return rejectWithValue("Invalid data format")
+      }
+    } catch (error) {
+      return rejectWithValue(error.toString())
+    }
+  }
+)
+
 export const contentSlice = createAppSlice({
   name: "content",
 
@@ -31,6 +50,20 @@ export const contentSlice = createAppSlice({
       state.rawText = action.payload
       state.finalTranscriptIndex = -1
       state.interimTranscriptIndex = -1
+    }),
+
+    saveContent: create.reducer((state) => {
+      fetch("http://svr01:3334/store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({data : state.rawText }),
+      }).catch((error) => {
+        console.error("Failed to save content:", error);
+      }).then((response) => {
+        console.log("Content saved successfully:", response);
+      });
     }),
 
     setFinalTranscriptIndex: create.reducer(
@@ -51,10 +84,22 @@ export const contentSlice = createAppSlice({
     }),
   }),
 
-  extraReducers: builder =>
+  extraReducers: builder => {
     builder.addCase(toggleEdit, state => {
       state.textElements = tokenize(state.rawText)
-    }),
+    })
+    // Handle fulfilled state of loadContent thunk
+    builder.addCase(loadContent.fulfilled, (state, action) => {
+      state.rawText = action.payload
+      state.textElements = tokenize(action.payload)
+      state.finalTranscriptIndex = -1
+      state.interimTranscriptIndex = -1
+      console.log("content loaded successfully:", action.payload)
+    })
+    builder.addCase(loadContent.rejected, (state, action) => {
+      console.error("Failed to load content:", action.payload)
+    })
+  },
 
   selectors: {
     selectRawText: state => state.rawText,
@@ -69,6 +114,7 @@ export const {
   setFinalTranscriptIndex,
   setInterimTranscriptIndex,
   resetTranscriptionIndices,
+  saveContent
 } = contentSlice.actions
 
 export const {

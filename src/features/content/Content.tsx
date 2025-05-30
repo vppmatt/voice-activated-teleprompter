@@ -29,6 +29,7 @@ export const Content = () => {
   const horizontallyFlipped = useAppSelector(selectHorizontallyFlipped)
   const verticallyFlipped = useAppSelector(selectVerticallyFlipped)
   const rawText = useAppSelector(selectRawText)
+  console.log("rawText", rawText)
   const textElements = useAppSelector(selectTextElements)
   const finalTranscriptIndex = useAppSelector(selectFinalTranscriptIndex)
   const interimTranscriptIndex = useAppSelector(selectInterimTranscriptIndex)

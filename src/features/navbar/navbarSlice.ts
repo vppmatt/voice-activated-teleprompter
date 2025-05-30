@@ -62,6 +62,7 @@ export const navbarSlice = createAppSlice({
     setOpacity: create.reducer((state, action: PayloadAction<number>) => {
       state.opacity = action.payload
     }),
+
   }),
 
   selectors: {

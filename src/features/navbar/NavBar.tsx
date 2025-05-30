@@ -17,7 +17,8 @@ import {
   selectOpacity,
 } from "./navbarSlice"
 
-import { resetTranscriptionIndices } from "../content/contentSlice"
+import { loadContent, resetTranscriptionIndices, saveContent } 
+from "../content/contentSlice"
 
 export const NavBar = () => {
   const dispatch = useAppDispatch()
@@ -43,11 +44,14 @@ export const NavBar = () => {
               <li className="first has-text-white">
                 &copy; Julien Lecomte (2024)
               </li>
-              <li className="has-text-warning">
+              <li className="has-text-white">
+                Multicode forked version
+              </li>
+              <li className="has-text-warning hidden-by-matt">
                 <i className="fa-solid fa-triangle-exclamation"></i> Only works
                 in Chrome
               </li>
-              <li className="last">
+              <li className="last hidden-by-matt">
                 <a href="https://www.paypal.com/donate/?hosted_button_id=49UXY8F6VVYFA">
                   Support this project
                 </a>
@@ -111,6 +115,26 @@ export const NavBar = () => {
               >
                 <span className="icon is-small">
                   <i className="fa-solid fa-pencil" />
+                </span>
+              </button>
+              <button
+                className="button"
+                disabled={status !== "stopped"}
+                onClick={() => dispatch(saveContent())}
+                title="Save"
+              >
+                <span className="icon is-small">
+                  <i className="fa-solid fa-floppy-disk" />
+                </span>
+              </button>
+              <button
+                className="button"
+                disabled={status !== "stopped"}
+                onClick={() => dispatch(loadContent())}
+                title="Load"
+              >
+                <span className="icon is-small">
+                  <i className="fa-solid fa-folder-open" />
                 </span>
               </button>
               <button
