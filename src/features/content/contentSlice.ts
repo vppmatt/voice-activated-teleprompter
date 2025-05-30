@@ -32,7 +32,7 @@ export const loadContent = createAsyncThunk(
       } else {
         return rejectWithValue("Invalid data format")
       }
-    } catch (error) {
+    } catch (error : any) {
       return rejectWithValue(error.toString())
     }
   }
